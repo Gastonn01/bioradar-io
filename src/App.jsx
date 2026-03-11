@@ -180,7 +180,6 @@ function CardA({ radarData, rawValues, score, grade, nick, age, isVerified, card
           fontFamily:"'Roboto Mono',monospace" }}>
           {isVerified ? AUTH_ID : TODAY}
         </span>
-      </div>
     </div>
   );
 }
@@ -296,7 +295,6 @@ function CardB({ radarData, rawValues, score, grade, nick, age, isVerified, card
               fontFamily:"'Roboto Mono',monospace" }}>{isVerified?AUTH_ID:TODAY}</div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -439,7 +437,6 @@ function CardC({ radarData, rawValues, score, grade, nick, age, isVerified, card
             {isVerified?AUTH_ID:TODAY}
           </span>
         </div>
-      </div>
     </div>
   );
 }
@@ -536,7 +533,6 @@ function CardD({ radarData, rawValues, score, grade, nick, age, isVerified, card
           fontFamily:"'Roboto Mono',monospace" }}>{BRAND}</span>
         <span style={{ fontSize:8,color:"rgba(255,255,255,0.22)",letterSpacing:2,
           fontFamily:"'Roboto Mono',monospace" }}>{TODAY}</span>
-      </div>
     </div>
   );
 }
@@ -677,7 +673,6 @@ function CardE({ radarData, rawValues, score, grade, nick, age, isVerified, card
           <span style={{ fontSize:9,letterSpacing:3,color:MAG,fontWeight:700 }}>{BRAND}</span>
           <span style={{ fontSize:8,letterSpacing:2,color:"rgba(255,255,255,0.22)" }}>{TODAY}</span>
         </div>
-      </div>
     </div>
   );
 }
@@ -792,9 +787,6 @@ export default function App() {
         input::placeholder{color:rgba(255,255,255,0.18)}
         input:focus{outline:none}
       `}</style>
-
-      <div style={{ minHeight:"100vh", background:"#040404", color:"#fff",
-        fontFamily:"'Roboto Mono','Courier New',monospace" }}>
 
         {/* ── HEADER ── */}
         <header style={{ borderBottom:"1px solid rgba(255,255,255,0.07)",
@@ -1235,7 +1227,6 @@ export default function App() {
 
           </div>
         )}
-      </div>
     </div>
   );
 }
