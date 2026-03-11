@@ -50,27 +50,27 @@ function CardA({ radarData, rawValues, score, grade, nick, age, isVerified, card
   );
   return (
     <div ref={cardRef} style={{width:540,height:540,flexShrink:0,overflow:"hidden",background:"#FFFFFF",fontFamily:"Georgia,'Times New Roman',serif",display:"flex",flexDirection:"column"}}>
-      <div style={{background:"#0D0D0D",padding:"18px 24px 16px",flexShrink:0}}>
-        <div style={{fontSize:6,letterSpacing:5,color:"rgba(255,255,255,0.38)",fontFamily:"'Roboto Mono',monospace",fontStyle:"normal",marginBottom:4}}>BIO-PERFORMANCE REPORT</div>
+      <div style={{background:"#0D0D0D",padding:"10px 22px 8px",flexShrink:0}}>
+        <div style={{fontSize:6,letterSpacing:5,color:"rgba(255,255,255,0.38)",fontFamily:"'Roboto Mono',monospace",fontStyle:"normal",marginBottom:2}}>BIO-PERFORMANCE REPORT</div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div style={{fontSize:nick?18:12,letterSpacing:2,color:"#fff",fontStyle:"italic"}}>{nick||"Performance Report"}{age&&<span style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginLeft:8}}>{age}</span>}</div>
-          {isVerified && <div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:"rgba(232,0,90,0.2)",border:"1px solid #E8005A",borderRadius:2}}><span style={{fontSize:6,letterSpacing:2,color:"#fff",fontFamily:"'Roboto Mono',monospace",fontWeight:700}}>◈ VERIFIED</span></div>}
+          <div style={{fontSize:nick?15:11,letterSpacing:2,color:"#fff",fontStyle:"italic"}}>{nick||"Performance Report"}{age&&<span style={{fontSize:10,color:"rgba(255,255,255,0.4)",marginLeft:6}}>{age}</span>}</div>
+          {isVerified && <div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 7px",background:"rgba(232,0,90,0.2)",border:"1px solid #E8005A",borderRadius:2}}><span style={{fontSize:6,letterSpacing:2,color:"#fff",fontFamily:"'Roboto Mono',monospace",fontWeight:700}}>◈ VERIFIED</span></div>}
         </div>
       </div>
       <div style={{height:3,background:MAG,flexShrink:0}}/>
-      <div style={{padding:"16px 24px 0",flexShrink:0}}>
-        <div style={{fontSize:7,letterSpacing:3,color:"#bbb",marginBottom:4,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>PERFORMANCE INDEX</div>
-        <div style={{display:"flex",alignItems:"flex-end",gap:16}}>
-          <div style={{fontSize:88,fontWeight:400,lineHeight:0.85,fontStyle:"italic",color:"#0D0D0D",letterSpacing:-5}}>{score}</div>
-          <div style={{paddingBottom:6}}>
-            <div style={{fontSize:11,letterSpacing:4,color:MAG,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal",fontWeight:700}}>{grade.label}</div>
-            <div style={{marginTop:5,width:28,height:2,background:MAG}}/>
-            <div style={{marginTop:8,fontSize:8,letterSpacing:1,color:"#aaa",fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>EFF {eff.value} · {eff.label}</div>
+      <div style={{padding:"10px 22px 0",flexShrink:0}}>
+        <div style={{fontSize:6,letterSpacing:3,color:"#bbb",marginBottom:2,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>PERFORMANCE INDEX</div>
+        <div style={{display:"flex",alignItems:"flex-end",gap:14}}>
+          <div style={{fontSize:72,fontWeight:400,lineHeight:0.88,fontStyle:"italic",color:"#0D0D0D",letterSpacing:-4}}>{score}</div>
+          <div style={{paddingBottom:4}}>
+            <div style={{fontSize:10,letterSpacing:4,color:MAG,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal",fontWeight:700}}>{grade.label}</div>
+            <div style={{marginTop:3,width:24,height:2,background:MAG}}/>
+            <div style={{marginTop:5,fontSize:7,letterSpacing:1,color:"#aaa",fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>EFF {eff.value} · {eff.label}</div>
           </div>
         </div>
-        <div style={{height:1,background:"#ebebeb",marginTop:14}}/>
+        <div style={{height:1,background:"#ebebeb",marginTop:8}}/>
       </div>
-      <div style={{flex:"0 0 240px",padding:"0 12px"}}>
+      <div style={{flex:"0 0 200px",padding:"0 10px"}}>
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={radarData} margin={{top:12,right:22,bottom:12,left:22}}>
             <defs>
@@ -90,7 +90,7 @@ function CardA({ radarData, rawValues, score, grade, nick, age, isVerified, card
           const pct = m.toRadar(rawValues[m.key]);
           const val = m.key==="strain"?Number(rawValues[m.key]).toFixed(1):rawValues[m.key];
           return (
-            <div key={m.key} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid #f4f4f4"}}>
+            <div key={m.key} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0",borderBottom:"1px solid #f4f4f4"}}>
               <span style={{fontSize:7,letterSpacing:1,color:"#aaa",fontFamily:"'Roboto Mono',monospace",width:54,flexShrink:0}}>{m.label}</span>
               <div style={{flex:1,height:1,background:"#f0f0f0"}}><div style={{width:`${pct}%`,height:"100%",background:MAG}}/></div>
               <span style={{fontSize:12,fontStyle:"italic",color:"#111",width:44,textAlign:"right",flexShrink:0}}>{val}<span style={{fontSize:7,color:"#bbb",fontStyle:"normal",marginLeft:2,fontFamily:"'Roboto Mono',monospace"}}>{m.unit}</span></span>
@@ -98,7 +98,7 @@ function CardA({ radarData, rawValues, score, grade, nick, age, isVerified, card
           );
         })}
       </div>
-      <div style={{padding:"10px 24px 16px",borderTop:"1px solid #ebebeb",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{padding:"7px 22px 10px",borderTop:"1px solid #ebebeb",flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <span style={{fontSize:8,color:"#222",letterSpacing:3,fontFamily:"'Roboto Mono',monospace",fontWeight:700}}>{BRAND}</span>
         <span style={{fontSize:6,color:"#bbb",letterSpacing:1,fontFamily:"'Roboto Mono',monospace"}}>{isVerified?AUTH_ID:TODAY}</span>
       </div>
@@ -124,19 +124,19 @@ function CardB({ radarData, rawValues, score, grade, nick, age, isVerified, card
       {[[false,false],[true,false],[false,true],[true,true]].map(([r,b],i)=>(
         <div key={i} style={{position:"absolute",width:20,height:20,top:b?undefined:10,bottom:b?10:undefined,left:r?undefined:10,right:r?10:undefined,borderTop:!b?`2px solid ${GOLD}60`:"none",borderBottom:b?`2px solid ${GOLD}60`:"none",borderLeft:!r?`2px solid ${GOLD}60`:"none",borderRight:r?`2px solid ${GOLD}60`:"none"}}/>
       ))}
-      <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",height:"100%",padding:"24px 26px 18px"}}>
-        <div style={{textAlign:"center",flexShrink:0,marginBottom:8}}>
-          <div style={{fontSize:7,letterSpacing:6,color:`${GOLD}75`,marginBottom:4,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>✦ {BRAND} ✦</div>
-          <div style={{fontSize:nick?18:13,letterSpacing:2,color:CREAM,fontStyle:"italic"}}>{nick||"Your Name"}</div>
-          {age&&<div style={{fontSize:8,letterSpacing:2,color:`${ROSE}80`,marginTop:2,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>{age} years</div>}
-        </div>
+      <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",height:"100%",padding:"14px 22px 12px"}}>
         <div style={{textAlign:"center",flexShrink:0,marginBottom:4}}>
-          <div style={{fontSize:7,letterSpacing:3,color:`${GOLD}55`,marginBottom:2,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>PERFORMANCE INDEX</div>
-          <div style={{fontSize:72,fontWeight:400,lineHeight:1,color:GOLD,letterSpacing:-2,fontStyle:"italic"}}>{score}</div>
-          <div style={{fontSize:9,letterSpacing:5,color:ROSE,marginTop:4,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>{grade.label}</div>
-          <div style={{width:32,height:1,background:GOLD,margin:"6px auto 0",opacity:0.5}}/>
+          <div style={{fontSize:7,letterSpacing:6,color:`${GOLD}75`,marginBottom:3,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>✦ {BRAND} ✦</div>
+          <div style={{fontSize:nick?15:11,letterSpacing:2,color:CREAM,fontStyle:"italic"}}>{nick||"Your Name"}</div>
+          {age&&<div style={{fontSize:7,letterSpacing:2,color:`${ROSE}80`,marginTop:1,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>{age} years</div>}
         </div>
-        <div style={{flex:"0 0 220px"}}>
+        <div style={{textAlign:"center",flexShrink:0,marginBottom:2}}>
+          <div style={{fontSize:6,letterSpacing:3,color:`${GOLD}55`,marginBottom:1,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>PERFORMANCE INDEX</div>
+          <div style={{fontSize:58,fontWeight:400,lineHeight:1,color:GOLD,letterSpacing:-2,fontStyle:"italic"}}>{score}</div>
+          <div style={{fontSize:8,letterSpacing:5,color:ROSE,marginTop:2,fontFamily:"'Roboto Mono',monospace",fontStyle:"normal"}}>{grade.label}</div>
+          <div style={{width:28,height:1,background:GOLD,margin:"4px auto 0",opacity:0.5}}/>
+        </div>
+        <div style={{flex:"0 0 190px"}}>
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={radarData} margin={{top:8,right:22,bottom:8,left:22}}>
               <defs>
@@ -154,7 +154,7 @@ function CardB({ radarData, rawValues, score, grade, nick, age, isVerified, card
         </div>
         <div style={{flex:1,overflow:"hidden"}}>
           {METRICS.map(m=>(
-            <div key={m.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"5px 0",borderBottom:`1px solid ${GOLD}20`}}>
+            <div key={m.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"3px 0",borderBottom:`1px solid ${GOLD}20`}}>
               <span style={{fontSize:7,letterSpacing:1,color:`${ROSE}90`,fontFamily:"'Roboto Mono',monospace"}}>{m.label}</span>
               <span style={{fontSize:12,color:CREAM,fontStyle:"italic"}}>
                 {m.key==="strain"?Number(rawValues[m.key]).toFixed(1):rawValues[m.key]}
