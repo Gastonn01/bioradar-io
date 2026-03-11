@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from "recharts";
 import { toPng } from "html-to-image";
 import { parseCSV, loadHistory, clearHistory } from "./parser.js";
@@ -7,7 +7,7 @@ import { parseCSV, loadHistory, clearHistory } from "./parser.js";
 //  CONSTANTS  — card is 540×960 CSS px → exported at pixelRatio:2 → 1080×1920
 // ═══════════════════════════════════════════════════════════════════════════════
 const CARD_W = 540;
-const CARD_H = 960;
+const CARD_H = 540;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  DATA & SCORING
@@ -92,7 +92,7 @@ function CardA({ radarData, rawValues, score, grade, nick, age, isVerified, card
     </g>
   );
   return (
-    <div ref={cardRef} style={{ width:CARD_W, height:CARD_H, flexShrink:0, overflow:"hidden",
+    <div ref={cardRef} style={{ width:540, height:540, flexShrink:0, overflow:"hidden",
       background:"#FFFFFF", fontFamily:"Georgia,'Times New Roman',serif",
       display:"flex", flexDirection:"column" }}>
 
@@ -199,7 +199,7 @@ function CardB({ radarData, rawValues, score, grade, nick, age, isVerified, card
     </g>
   );
   return (
-    <div ref={cardRef} style={{ width:CARD_W, height:CARD_H, flexShrink:0, overflow:"hidden",
+    <div ref={cardRef} style={{ width:540, height:540, flexShrink:0, overflow:"hidden",
       background:`linear-gradient(165deg,#1A1008 0%,#120D07 50%,#1E1208 100%)`,
       fontFamily:"Georgia,'Times New Roman',serif",
       display:"flex", flexDirection:"column", position:"relative" }}>
@@ -314,7 +314,7 @@ function CardC({ radarData, rawValues, score, grade, nick, age, isVerified, card
     </g>
   );
   return (
-    <div ref={cardRef} style={{ width:CARD_W, height:CARD_H, flexShrink:0, overflow:"hidden",
+    <div ref={cardRef} style={{ width:540, height:540, flexShrink:0, overflow:"hidden",
       background:"linear-gradient(145deg,#000 0%,#06040e 100%)",
       fontFamily:"'Roboto Mono',monospace", display:"flex", flexDirection:"column",
       border:`1px solid ${CYAN}20`, position:"relative" }}>
@@ -451,7 +451,7 @@ function CardD({ radarData, rawValues, score, grade, nick, age, isVerified, card
   const Dot = ({ cx, cy }) => <circle cx={cx} cy={cy} r={5} fill="#fff"/>;
 
   return (
-    <div ref={cardRef} style={{ width:CARD_W, height:CARD_H, flexShrink:0, overflow:"hidden",
+    <div ref={cardRef} style={{ width:540, height:540, flexShrink:0, overflow:"hidden",
       background:"#080808", fontFamily:"'Oswald','Arial Black',sans-serif",
       display:"flex", flexDirection:"column" }}>
 
@@ -554,7 +554,7 @@ function CardE({ radarData, rawValues, score, grade, nick, age, isVerified, card
   );
 
   return (
-    <div ref={cardRef} style={{ width:CARD_W, height:CARD_H, flexShrink:0, overflow:"hidden",
+    <div ref={cardRef} style={{ width:540, height:540, flexShrink:0, overflow:"hidden",
       background:"#0D0D0D", fontFamily:"'Roboto Mono',monospace",
       display:"flex", flexDirection:"column", position:"relative" }}>
 
@@ -741,8 +741,8 @@ export default function App() {
       const isLight = themeId==="A";
       // The card is already 540×960 CSS px — pixelRatio:2 → 1080×1920 native
       const png = await toPng(el, {
-        width:  CARD_W,
-        height: CARD_H,
+        width:  540,
+        height: 540,
         pixelRatio: 2,
         backgroundColor: isLight?"#ffffff":"#000000",
         style:{ transform:"none", position:"relative", top:"0", left:"0" },
