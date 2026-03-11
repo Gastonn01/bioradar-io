@@ -768,6 +768,12 @@ export default function App() {
   const activeTheme = THEMES.find(t=>t.id===activeId);
   const ActiveCard  = activeTheme.Component;
   const cardProps   = (id,ref)=>({ radarData, rawValues, score, grade, nick, age, isVerified, cardRef:ref });
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 700);
+  useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 700);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
   const SC = ["#00F2FF","#00D97E","#7B61FF","#FF6B35","#FF2D78"];
 
   return (
@@ -776,299 +782,459 @@ export default function App() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&family=Oswald:wght@700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{overflow-x:hidden}
         ::-webkit-scrollbar{width:3px;height:3px}
         ::-webkit-scrollbar-thumb{background:rgba(0,242,255,0.22);border-radius:2px}
-        input[type=range]{-webkit-appearance:none;height:2px;border-radius:1px;outline:none;cursor:pointer;width:100%;display:block}
-        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;border:2px solid currentColor;background:#040404;cursor:pointer;transition:transform .15s}
-        input[type=range]::-webkit-slider-thumb:active{transform:scale(1.3)}
-        button{cursor:pointer}
+        input[type=range]{-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;width:100%;display:block}
+        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;background:#040404;cursor:pointer}
+        input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;background:#040404;cursor:pointer}
+        button{cursor:pointer;-webkit-tap-highlight-color:transparent}
         input::placeholder{color:rgba(255,255,255,0.18)}
         input:focus{outline:none}
-        .tab{transition:all .18s}
-        .thumb{transition:transform .2s;cursor:pointer}
-        .xbtn{transition:opacity .2s}.xbtn:hover:not(:disabled){opacity:.8}
-
-        /* ── MOBILE RESPONSIVE ── */
-        .app-grid { display:grid; grid-template-columns:280px 1fr; gap:36px; align-items:start; }
-        .left-panel { position:sticky; top:24px; }
-        .preview-wrap { display:flex; justify-content:center; }
-        .thumbs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-        .export-bar { display:flex; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
-        .export-btn-wrap { margin-left:auto; }
-
-        @media (max-width: 700px) {
-          .app-grid { grid-template-columns:1fr; gap:0; }
-          .left-panel { position:static; padding:0 16px; }
-          .right-panel { padding:0 16px 40px; }
-          .thumbs-grid { grid-template-columns:repeat(4,1fr); gap:6px; }
-          .export-bar { flex-direction:column; align-items:stretch; gap:10px; }
-          .export-btn-wrap { margin-left:0; }
-          .header-sub { display:none; }
-        }
       `}</style>
 
-      <div style={{ maxWidth:1300,margin:"0 auto",padding:"24px 0 70px" }}>
+      <div style={{ minHeight:"100vh", background:"#040404", color:"#fff",
+        fontFamily:"'Roboto Mono','Courier New',monospace" }}>
 
-        {/* HEADER */}
-        <header style={{ borderBottom:"1px solid rgba(255,255,255,0.07)",paddingBottom:16,
-          marginBottom:24, paddingLeft:20, paddingRight:20 }}>
-          <div style={{ display:"flex",alignItems:"center",gap:8,marginBottom:6 }}>
-            <div style={{ width:5,height:5,borderRadius:"50%",background:"#00F2FF",boxShadow:"0 0 8px #00F2FF" }}/>
-            <span className="header-sub" style={{ fontSize:9,letterSpacing:4,color:"rgba(0,242,255,0.65)" }}>
+        {/* ── HEADER ── */}
+        <header style={{ borderBottom:"1px solid rgba(255,255,255,0.07)",
+          padding: isMobile ? "16px 16px 14px" : "22px 28px 18px" }}>
+          <div style={{ display:"flex",alignItems:"center",gap:8,marginBottom:4 }}>
+            <div style={{ width:5,height:5,borderRadius:"50%",background:"#00F2FF",
+              boxShadow:"0 0 8px #00F2FF",flexShrink:0 }}/>
+            {!isMobile && <span style={{ fontSize:9,letterSpacing:4,color:"rgba(0,242,255,0.60)" }}>
               5 THEMES · EXPORT 1080×1080
-            </span>
+            </span>}
           </div>
-          <h1 style={{ fontFamily:"'Oswald',sans-serif",fontSize:"clamp(26px,5vw,38px)",
-            fontWeight:700,letterSpacing:4,lineHeight:1.05 }}>
-            {BRAND}
-          </h1>
-          <p style={{ fontSize:"clamp(9px,2.5vw,11px)",color:"rgba(255,255,255,0.25)",
-            letterSpacing:2,marginTop:4 }}>
-            BIO-PERFORMANCE RADAR
-          </p>
+          <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center" }}>
+            <div>
+              <h1 style={{ fontFamily:"'Oswald',sans-serif",
+                fontSize: isMobile ? 28 : 36,
+                fontWeight:700,letterSpacing:3,lineHeight:1 }}>{BRAND}</h1>
+              <p style={{ fontSize: isMobile ? 9 : 10,color:"rgba(255,255,255,0.25)",
+                letterSpacing:2,marginTop:3 }}>BIO-PERFORMANCE RADAR</p>
+            </div>
+            {/* Mobile: Bio-Score in header */}
+            {isMobile && (
+              <div style={{ textAlign:"right" }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:36,fontWeight:700,
+                  color:grade.color,lineHeight:1,
+                  textShadow:`0 0 16px ${grade.color}55` }}>{score}</div>
+                <div style={{ fontSize:9,letterSpacing:2,color:grade.color,marginTop:2 }}>{grade.label}</div>
+              </div>
+            )}
+          </div>
         </header>
 
-        <div className="app-grid">
+        {isMobile ? (
+          /* ════════════════════════════════════════
+             MOBILE LAYOUT — single column
+             1. Metrics/controls
+             2. Theme picker
+             3. Card preview
+             4. Export button
+             5. Thumbnails
+          ════════════════════════════════════════ */
+          <div style={{ padding:"0 0 60px" }}>
 
-          {/* ════ LEFT PANEL — controls ════ */}
-          <div className="left-panel">
-
-            {/* Mode toggle */}
-            <div style={{ display:"flex",marginBottom:18,paddingTop:4 }}>
-              {["manual","upload"].map((m,i)=>(
-                <button key={m} className="tab"
-                  onClick={()=>setMode(m)}
-                  style={{ flex:1,background:"transparent",fontFamily:"inherit",
-                    fontSize:11,letterSpacing:2,padding:"10px 0",
-                    border:`1px solid ${mode===m?"rgba(0,242,255,0.55)":"rgba(255,255,255,0.1)"}`,
-                    color:mode===m?"#00F2FF":"rgba(255,255,255,0.32)",
-                    borderRight:i===0?"none":undefined }}>
-                  {m==="manual"?"◈ MANUAL":"↑ CSV"}
-                </button>
-              ))}
+            {/* ── SECTION 1: INPUT MODE TOGGLE ── */}
+            <div style={{ padding:"16px 16px 0" }}>
+              <div style={{ display:"flex",marginBottom:16 }}>
+                {["manual","upload"].map((m,i)=>(
+                  <button key={m} onClick={()=>setMode(m)}
+                    style={{ flex:1,background:"transparent",fontFamily:"inherit",
+                      fontSize:12,letterSpacing:2,padding:"11px 0",
+                      border:`1px solid ${mode===m?"rgba(0,242,255,0.55)":"rgba(255,255,255,0.1)"}`,
+                      color:mode===m?"#00F2FF":"rgba(255,255,255,0.35)",
+                      borderRight:i===0?"none":undefined }}>
+                    {m==="manual"?"◈ MANUAL":"↑ CSV"}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {mode==="upload" ? (
-              <div>
-                <div style={{ display:"flex",gap:8,padding:"10px 12px",background:"rgba(0,255,157,0.04)",
-                  border:"1px solid rgba(0,255,157,0.12)",marginBottom:14,fontSize:11,
-                  color:"rgba(255,255,255,0.35)",letterSpacing:1,lineHeight:1.7 }}>
-                  <span style={{ color:"#00FF9D",flexShrink:0 }}>⬡</span>
-                  <span>Parsed locally. No data leaves your device.</span>
-                </div>
-                <div style={{ border:`1px dashed ${dragOver?"rgba(0,242,255,0.7)":"rgba(0,242,255,0.22)"}`,
-                  padding:"36px 20px",textAlign:"center",cursor:"pointer",borderRadius:2,
-                  background:dragOver?"rgba(0,242,255,0.04)":"transparent",marginBottom:14,transition:"all .25s" }}
+              <div style={{ padding:"0 16px 16px" }}>
+                <div style={{ border:`1px dashed ${dragOver?"rgba(0,242,255,0.7)":"rgba(0,242,255,0.28)"}`,
+                  padding:"32px 20px",textAlign:"center",cursor:"pointer",borderRadius:2,
+                  background:dragOver?"rgba(0,242,255,0.05)":"transparent",
+                  marginBottom:12,transition:"all .2s" }}
                   onDragOver={e=>{e.preventDefault();setDragOver(true)}}
                   onDragLeave={()=>setDragOver(false)}
                   onDrop={handleDrop} onClick={openPicker}>
-                  <div style={{ fontSize:32,color:"rgba(0,242,255,0.32)",marginBottom:10 }}>⬡</div>
-                  <p style={{ fontSize:13,letterSpacing:2,color:"rgba(255,255,255,0.5)",marginBottom:6 }}>TAP TO UPLOAD CSV</p>
-                  <p style={{ fontSize:11,color:"rgba(255,255,255,0.22)",letterSpacing:1 }}>WHOOP · OURA · APPLE HEALTH</p>
+                  <div style={{ fontSize:34,color:"rgba(0,242,255,0.35)",marginBottom:10 }}>⬡</div>
+                  <p style={{ fontSize:14,letterSpacing:2,color:"rgba(255,255,255,0.55)",marginBottom:6 }}>TAP TO UPLOAD</p>
+                  <p style={{ fontSize:11,color:"rgba(255,255,255,0.25)" }}>WHOOP · OURA · APPLE HEALTH</p>
                 </div>
-                {parseError&&<p style={{ fontSize:11,color:"#FF6B35",letterSpacing:1,marginBottom:12,lineHeight:1.5 }}>⚠ {parseError}</p>}
+                {parseError&&<p style={{ fontSize:12,color:"#FF6B35",marginBottom:10,lineHeight:1.5 }}>⚠ {parseError}</p>}
                 {history.length>0&&(
-                  <div style={{ padding:"12px 14px",background:"rgba(0,242,255,0.04)",
-                    border:"1px solid rgba(0,242,255,0.12)",fontSize:11,letterSpacing:1,lineHeight:1.9 }}>
-                    <div style={{ color:"rgba(0,242,255,0.65)",marginBottom:6 }}>LAST {history.length} DAYS</div>
+                  <div style={{ padding:"12px",background:"rgba(0,242,255,0.04)",
+                    border:"1px solid rgba(0,242,255,0.15)",fontSize:11,lineHeight:1.9 }}>
+                    <div style={{ color:"rgba(0,242,255,0.65)",marginBottom:6,letterSpacing:2 }}>
+                      LAST {history.length} DAYS
+                    </div>
                     {history.slice(-3).reverse().map((d,i)=>(
                       <div key={i} style={{ display:"flex",justifyContent:"space-between",
-                        color:"rgba(255,255,255,0.36)" }}>
+                        color:"rgba(255,255,255,0.42)" }}>
                         <span>{d.date||"—"}</span>
-                        <span style={{ color:"rgba(255,255,255,0.55)" }}>REC {d.recovery}% HRV {d.hrv}ms</span>
+                        <span>REC {d.recovery}% · HRV {d.hrv}ms</span>
                       </div>
                     ))}
                     <button onClick={()=>{clearHistory();setHistory([]);}}
-                      style={{ marginTop:8,background:"none",border:"none",color:"rgba(255,100,100,0.5)",
-                        fontSize:11,letterSpacing:2,cursor:"pointer",fontFamily:"inherit",padding:0 }}>
-                      ✕ CLEAR
-                    </button>
+                      style={{ marginTop:10,background:"none",border:"none",
+                        color:"rgba(255,100,100,0.55)",fontSize:11,cursor:"pointer",
+                        fontFamily:"inherit",padding:0,letterSpacing:1 }}>✕ CLEAR</button>
                   </div>
                 )}
               </div>
             ) : (
-              <div>
-                <p style={{ fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.24)",marginBottom:16 }}>YOUR METRICS</p>
+              /* ── METRICS SLIDERS ── */
+              <div style={{ padding:"0 16px 8px" }}>
                 {METRICS.map((m,i)=>{
                   const raw=rawValues[m.key], pct=m.toRadar(raw), isF=m.rawStep<1, sc=SC[i];
                   return (
-                    <div key={m.key} style={{ marginBottom:22 }}>
-                      <div style={{ display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8 }}>
-                        <div style={{ display:"flex",alignItems:"center",gap:8 }}>
-                          <span style={{ color:sc,fontSize:14 }}>{m.icon}</span>
-                          <span style={{ fontSize:12,letterSpacing:2,color:"rgba(255,255,255,0.65)" }}>{m.label}</span>
+                    <div key={m.key} style={{ marginBottom:24,
+                      paddingBottom:20,borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ display:"flex",justifyContent:"space-between",
+                        alignItems:"center",marginBottom:12 }}>
+                        <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                          <span style={{ color:sc,fontSize:18 }}>{m.icon}</span>
+                          <span style={{ fontSize:13,letterSpacing:2,color:"rgba(255,255,255,0.7)" }}>{m.label}</span>
                         </div>
-                        <div style={{ display:"flex",alignItems:"baseline",gap:3 }}>
-                          <span style={{ fontFamily:"'Oswald',sans-serif",fontSize:22,fontWeight:700,color:sc }}>
+                        <div style={{ display:"flex",alignItems:"baseline",gap:4 }}>
+                          <span style={{ fontFamily:"'Oswald',sans-serif",fontSize:28,
+                            fontWeight:700,color:sc }}>
                             {isF?Number(raw).toFixed(1):raw}
                           </span>
-                          <span style={{ fontSize:10,color:"rgba(255,255,255,0.28)" }}>{m.unit}</span>
+                          <span style={{ fontSize:11,color:"rgba(255,255,255,0.3)" }}>{m.unit}</span>
                         </div>
                       </div>
                       <input type="range" min={m.rawMin} max={m.rawMax} step={m.rawStep} value={raw}
                         onChange={e=>handleSlider(m.key,e.target.value)}
                         style={{ color:sc, background:m.key==="rhr"
-                          ?`linear-gradient(to left,${sc} ${pct}%,rgba(255,255,255,0.08) ${pct}%)`
-                          :`linear-gradient(to right,${sc} ${pct}%,rgba(255,255,255,0.08) ${pct}%)` }}/>
-                      {m.key==="rhr"&&<p style={{ fontSize:9,color:"rgba(255,45,120,0.4)",letterSpacing:1,marginTop:4 }}>↓ lower = better</p>}
-                      {m.key==="strain"&&<p style={{ fontSize:9,color:"rgba(255,107,53,0.4)",letterSpacing:1,marginTop:4 }}>Whoop 0.0–21.0</p>}
+                          ?`linear-gradient(to left,${sc} ${pct}%,rgba(255,255,255,0.1) ${pct}%)`
+                          :`linear-gradient(to right,${sc} ${pct}%,rgba(255,255,255,0.1) ${pct}%)` }}/>
+                      {m.key==="rhr"&&<p style={{ fontSize:10,color:"rgba(255,45,120,0.45)",marginTop:6 }}>
+                        ↓ lower = better · 40 bpm = peak
+                      </p>}
+                      {m.key==="strain"&&<p style={{ fontSize:10,color:"rgba(255,107,53,0.45)",marginTop:6 }}>
+                        Whoop scale 0.0 – 21.0
+                      </p>}
+                    </div>
+                  );
+                })}
+
+                {/* Name + Age */}
+                <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20 }}>
+                  {[["NAME","text",nick,v=>setNick(v)],["AGE","number",age,v=>setAge(v)]].map(([l,t,v,fn])=>(
+                    <div key={l}>
+                      <label style={{ fontSize:9,letterSpacing:2,color:"rgba(255,255,255,0.24)",
+                        display:"block",marginBottom:6 }}>{l}</label>
+                      <input value={v} onChange={e=>fn(e.target.value)} type={t}
+                        style={{ background:"transparent",border:"none",
+                          borderBottom:"1px solid rgba(255,255,255,0.14)",
+                          color:"#fff",fontFamily:"inherit",fontSize:16,width:"100%",
+                          padding:"6px 0",letterSpacing:1 }}/>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Efficiency row */}
+                <div style={{ padding:"12px 14px",background:"rgba(255,255,255,0.02)",
+                  border:`1px solid ${grade.color}20`,marginBottom:8 }}>
+                  <div style={{ display:"flex",justifyContent:"space-between" }}>
+                    <div>
+                      <div style={{ fontSize:8,letterSpacing:2,color:"rgba(255,255,255,0.22)",marginBottom:3 }}>EFFICIENCY RATIO</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:22,color:"rgba(255,255,255,0.65)",fontWeight:700 }}>{eff.value}</div>
+                      <div style={{ fontSize:9,color:"rgba(255,255,255,0.3)",marginTop:2,letterSpacing:1 }}>{eff.label}</div>
+                    </div>
+                    <div style={{ textAlign:"right" }}>
+                      <div style={{ fontSize:8,letterSpacing:2,color:"rgba(255,255,255,0.22)",marginBottom:3 }}>STRAIN/REC</div>
+                      <div style={{ fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:2,letterSpacing:1 }}>
+                        {rawValues.strain} / {rawValues.recovery}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 2: THEME PICKER ── */}
+            <div style={{ padding:"16px 16px 0",
+              borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+              <p style={{ fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.22)",marginBottom:12 }}>SELECT THEME</p>
+              <div style={{ display:"flex",gap:8,overflowX:"auto",paddingBottom:8,
+                WebkitOverflowScrolling:"touch" }}>
+                {THEMES.map(t=>(
+                  <button key={t.id} onClick={()=>setActiveId(t.id)}
+                    style={{ background:activeId===t.id?"rgba(255,255,255,0.09)":"transparent",
+                      border:`1px solid ${activeId===t.id?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"}`,
+                      color:activeId===t.id?"#fff":"rgba(255,255,255,0.38)",
+                      padding:"10px 18px",fontFamily:"inherit",fontSize:11,letterSpacing:2,
+                      whiteSpace:"nowrap",flexShrink:0 }}>
+                    {t.name.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── SECTION 3: CARD PREVIEW ── */}
+            <div style={{ padding:"16px",background:"rgba(0,0,0,0.3)" }}>
+              <p style={{ fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.22)",marginBottom:12 }}>
+                {activeTheme.name.toUpperCase()} <span style={{ color:"rgba(255,255,255,0.25)",fontWeight:400 }}>· {activeTheme.tagline}</span>
+              </p>
+              {/* Scale the 540×540 card to fit screen width */}
+              <div style={{ width:"100%",aspectRatio:"1/1",
+                position:"relative",overflow:"hidden",
+                border:"1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{
+                  position:"absolute",top:0,left:0,
+                  width:540,height:540,
+                  transformOrigin:"top left",
+                  transform:`scale(${(window.innerWidth - 32) / 540})`,
+                  pointerEvents:"none"
+                }}>
+                  <ActiveCard {...cardProps(activeId, el=>{ cardRefs.current[activeId]=el; })} />
+                </div>
+              </div>
+            </div>
+
+            {/* ── SECTION 4: EXPORT BUTTON ── */}
+            <div style={{ padding:"0 16px 16px" }}>
+              <button onClick={()=>doExport(activeId)}
+                disabled={exportSt[activeId]==="loading"}
+                style={{ width:"100%",background:"transparent",
+                  border:"1px solid rgba(255,255,255,0.4)",color:"#fff",
+                  padding:"16px",fontFamily:"inherit",fontSize:12,letterSpacing:3,
+                  marginTop:12 }}>
+                {exportSt[activeId]==="done"    ? "✓ SAVED · 1080×1080 PNG" :
+                 exportSt[activeId]==="loading" ? "⟳ RENDERING…"            :
+                 "↓ EXPORT 1080×1080 PNG"}
+              </button>
+            </div>
+
+            {/* ── SECTION 5: THUMBNAILS ── */}
+            <div style={{ padding:"0 16px 24px",borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+              <p style={{ fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.18)",
+                margin:"16px 0 12px" }}>OTHER THEMES</p>
+              <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8 }}>
+                {THEMES.filter(t=>t.id!==activeId).map(t=>{
+                  const TC=t.Component;
+                  return (
+                    <div key={t.id} onClick={()=>setActiveId(t.id)}
+                      style={{ border:"1px solid rgba(255,255,255,0.08)",overflow:"hidden",
+                        position:"relative",aspectRatio:"1/1",width:"100%" }}>
+                      <div style={{ position:"absolute",top:0,left:0,
+                        transformOrigin:"top left",transform:`scale(${1/4.5})`,
+                        width:540,height:540,pointerEvents:"none" }}>
+                        <TC {...cardProps(t.id,null)}/>
+                      </div>
+                      <div style={{ position:"absolute",inset:0 }}/>
+                      <div style={{ position:"absolute",bottom:0,left:0,right:0,
+                        padding:"3px 5px",background:"rgba(0,0,0,0.88)",
+                        fontSize:7,color:"rgba(255,255,255,0.4)",letterSpacing:0.5 }}>
+                        {t.name.toUpperCase()}
+                      </div>
                     </div>
                   );
                 })}
               </div>
-            )}
-
-            {/* Identity */}
-            <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:18,marginTop:4,
-              display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
-              {[["NAME / HANDLE","text",nick,v=>setNick(v)],
-                ["AGE","number",age,v=>setAge(v)]].map(([l,t,v,fn])=>(
-                <div key={l}>
-                  <label style={{ fontSize:9,letterSpacing:2,color:"rgba(255,255,255,0.24)",
-                    display:"block",marginBottom:6 }}>{l}</label>
-                  <input value={v} onChange={e=>fn(e.target.value)} type={t}
-                    style={{ background:"transparent",border:"none",
-                      borderBottom:"1px solid rgba(255,255,255,0.12)",
-                      color:"#fff",fontFamily:"inherit",fontSize:14,width:"100%",
-                      padding:"4px 0",letterSpacing:1 }}/>
-                </div>
-              ))}
             </div>
 
-            {/* Bio-Score dashboard */}
-            <div style={{ marginTop:20,padding:"16px",background:"rgba(255,255,255,0.02)",
-              border:`1px solid ${grade.color}22` }}>
-              <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start" }}>
+          </div>
+
+        ) : (
+
+          /* ════════════════════════════════════════
+             DESKTOP LAYOUT — two columns
+          ════════════════════════════════════════ */
+          <div style={{ display:"grid",gridTemplateColumns:"280px 1fr",
+            gap:36,alignItems:"start",
+            maxWidth:1300,margin:"0 auto",padding:"28px 28px 70px" }}>
+
+            {/* LEFT: controls */}
+            <div style={{ position:"sticky",top:24 }}>
+              <div style={{ display:"flex",marginBottom:18 }}>
+                {["manual","upload"].map((m,i)=>(
+                  <button key={m} onClick={()=>setMode(m)}
+                    style={{ flex:1,background:"transparent",fontFamily:"inherit",
+                      fontSize:9,letterSpacing:2,padding:"9px 0",
+                      border:`1px solid ${mode===m?"rgba(0,242,255,0.55)":"rgba(255,255,255,0.1)"}`,
+                      color:mode===m?"#00F2FF":"rgba(255,255,255,0.32)",
+                      borderRight:i===0?"none":undefined }}>
+                    {m==="manual"?"◈ MANUAL":"↑ CSV"}
+                  </button>
+                ))}
+              </div>
+
+              {mode==="upload" ? (
                 <div>
-                  <p style={{ fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.2)",marginBottom:4 }}>BIO-SCORE</p>
-                  <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:42,fontWeight:700,
-                    color:grade.color,textShadow:`0 0 18px ${grade.color}55` }}>{score}</div>
-                  <p style={{ fontSize:9,letterSpacing:3,color:grade.color,marginTop:3 }}>{grade.label}</p>
+                  <div style={{ display:"flex",gap:8,padding:"8px 10px",
+                    background:"rgba(0,255,157,0.04)",border:"1px solid rgba(0,255,157,0.12)",
+                    marginBottom:12,fontSize:9,color:"rgba(255,255,255,0.30)",lineHeight:1.7 }}>
+                    <span style={{ color:"#00FF9D",flexShrink:0 }}>⬡</span>
+                    <span>Parsed locally. No data leaves your device.</span>
+                  </div>
+                  <div style={{ border:`1px dashed ${dragOver?"rgba(0,242,255,0.7)":"rgba(0,242,255,0.22)"}`,
+                    padding:"32px 20px",textAlign:"center",cursor:"pointer",borderRadius:2,
+                    background:dragOver?"rgba(0,242,255,0.04)":"transparent",
+                    marginBottom:12,transition:"all .25s" }}
+                    onDragOver={e=>{e.preventDefault();setDragOver(true)}}
+                    onDragLeave={()=>setDragOver(false)}
+                    onDrop={handleDrop} onClick={openPicker}>
+                    <div style={{ fontSize:28,color:"rgba(0,242,255,0.32)",marginBottom:10 }}>⬡</div>
+                    <p style={{ fontSize:11,letterSpacing:2,color:"rgba(255,255,255,0.46)",marginBottom:5 }}>DROP CSV HERE</p>
+                    <p style={{ fontSize:9,color:"rgba(255,255,255,0.22)" }}>WHOOP · OURA · APPLE HEALTH</p>
+                  </div>
+                  {parseError&&<p style={{ fontSize:9,color:"#FF6B35",marginBottom:10,lineHeight:1.5 }}>⚠ {parseError}</p>}
+                  {history.length>0&&(
+                    <div style={{ padding:"10px 12px",background:"rgba(0,242,255,0.04)",
+                      border:"1px solid rgba(0,242,255,0.12)",fontSize:9,lineHeight:1.9 }}>
+                      <div style={{ color:"rgba(0,242,255,0.65)",marginBottom:4,letterSpacing:1 }}>LAST {history.length} DAYS</div>
+                      {history.slice(-3).reverse().map((d,i)=>(
+                        <div key={i} style={{ display:"flex",justifyContent:"space-between",color:"rgba(255,255,255,0.36)" }}>
+                          <span>{d.date||"—"}</span>
+                          <span style={{ color:"rgba(255,255,255,0.55)" }}>REC {d.recovery}% HRV {d.hrv}ms</span>
+                        </div>
+                      ))}
+                      <button onClick={()=>{clearHistory();setHistory([]);}}
+                        style={{ marginTop:8,background:"none",border:"none",
+                          color:"rgba(255,100,100,0.5)",fontSize:9,cursor:"pointer",
+                          fontFamily:"inherit",padding:0,letterSpacing:1 }}>✕ CLEAR</button>
+                    </div>
+                  )}
                 </div>
-                <div style={{ textAlign:"right" }}>
-                  <p style={{ fontSize:8,letterSpacing:2,color:"rgba(255,255,255,0.2)",marginBottom:4 }}>EFFICIENCY</p>
-                  <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700,
-                    color:"rgba(255,255,255,0.65)" }}>{eff.value}</div>
-                  <p style={{ fontSize:9,letterSpacing:1,color:"rgba(255,255,255,0.3)",marginTop:3 }}>{eff.label}</p>
+              ) : (
+                <div>
+                  <p style={{ fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.24)",marginBottom:14 }}>YOUR METRICS</p>
+                  {METRICS.map((m,i)=>{
+                    const raw=rawValues[m.key], pct=m.toRadar(raw), isF=m.rawStep<1, sc=SC[i];
+                    return (
+                      <div key={m.key} style={{ marginBottom:20 }}>
+                        <div style={{ display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:6 }}>
+                          <div style={{ display:"flex",alignItems:"center",gap:6 }}>
+                            <span style={{ color:sc,fontSize:13 }}>{m.icon}</span>
+                            <span style={{ fontSize:10,letterSpacing:2,color:"rgba(255,255,255,0.62)" }}>{m.label}</span>
+                          </div>
+                          <div style={{ display:"flex",alignItems:"baseline",gap:3 }}>
+                            <span style={{ fontFamily:"'Oswald',sans-serif",fontSize:20,fontWeight:700,color:sc }}>
+                              {isF?Number(raw).toFixed(1):raw}
+                            </span>
+                            <span style={{ fontSize:9,color:"rgba(255,255,255,0.28)" }}>{m.unit}</span>
+                          </div>
+                        </div>
+                        <input type="range" min={m.rawMin} max={m.rawMax} step={m.rawStep} value={raw}
+                          onChange={e=>handleSlider(m.key,e.target.value)}
+                          style={{ color:sc, background:m.key==="rhr"
+                            ?`linear-gradient(to left,${sc} ${pct}%,rgba(255,255,255,0.08) ${pct}%)`
+                            :`linear-gradient(to right,${sc} ${pct}%,rgba(255,255,255,0.08) ${pct}%)` }}/>
+                        {m.key==="rhr"&&<p style={{ fontSize:8,color:"rgba(255,45,120,0.4)",marginTop:3 }}>↓ lower = better</p>}
+                        {m.key==="strain"&&<p style={{ fontSize:8,color:"rgba(255,107,53,0.4)",marginTop:3 }}>Whoop 0.0–21.0</p>}
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+
+              <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:4,
+                display:"grid",gridTemplateColumns:"1fr 1fr",gap:14 }}>
+                {[["NAME","text",nick,v=>setNick(v)],["AGE","number",age,v=>setAge(v)]].map(([l,t,v,fn])=>(
+                  <div key={l}>
+                    <label style={{ fontSize:7,letterSpacing:2,color:"rgba(255,255,255,0.24)",display:"block",marginBottom:4 }}>{l}</label>
+                    <input value={v} onChange={e=>fn(e.target.value)} type={t}
+                      style={{ background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.1)",
+                        color:"#fff",fontFamily:"inherit",fontSize:12,width:"100%",padding:"3px 0",letterSpacing:1 }}/>
+                  </div>
+                ))}
               </div>
-              <p style={{ fontSize:7,color:"rgba(255,255,255,0.14)",letterSpacing:1,marginTop:12,lineHeight:2 }}>
-                HRV 25% · SLEEP 25% · REC 30% · RHR 20% · STRAIN EXCLUDED
-              </p>
+
+              <div style={{ marginTop:18,padding:"14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${grade.color}20` }}>
+                <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start" }}>
+                  <div>
+                    <p style={{ fontSize:7,letterSpacing:3,color:"rgba(255,255,255,0.2)",marginBottom:3 }}>BIO-SCORE</p>
+                    <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:38,fontWeight:700,
+                      color:grade.color,textShadow:`0 0 16px ${grade.color}55` }}>{score}</div>
+                    <p style={{ fontSize:8,letterSpacing:3,color:grade.color,marginTop:2 }}>{grade.label}</p>
+                  </div>
+                  <div style={{ textAlign:"right" }}>
+                    <p style={{ fontSize:7,letterSpacing:2,color:"rgba(255,255,255,0.2)",marginBottom:3 }}>EFFICIENCY</p>
+                    <div style={{ fontFamily:"'Oswald',sans-serif",fontSize:22,fontWeight:700,color:"rgba(255,255,255,0.65)" }}>{eff.value}</div>
+                    <p style={{ fontSize:8,letterSpacing:1,color:"rgba(255,255,255,0.3)",marginTop:2 }}>{eff.label}</p>
+                  </div>
+                </div>
+                <p style={{ fontSize:6,color:"rgba(255,255,255,0.14)",letterSpacing:1,marginTop:10,lineHeight:2 }}>
+                  HRV 25% · SLEEP 25% · REC 30% · RHR 20%
+                </p>
+              </div>
             </div>
 
-          </div>{/* end left panel */}
-
-          {/* ════ RIGHT PANEL — preview + export ════ */}
-          <div className="right-panel" style={{ paddingTop:4 }}>
-
-            {/* Theme tabs — horizontal scroll on mobile */}
-            <div style={{ display:"flex",gap:6,marginBottom:18,
-              overflowX:"auto",paddingBottom:4,
-              WebkitOverflowScrolling:"touch" }}>
-              {THEMES.map(t=>(
-                <button key={t.id} className="tab"
-                  onClick={()=>setActiveId(t.id)}
-                  style={{ background:activeId===t.id?"rgba(255,255,255,0.08)":"transparent",
-                    border:`1px solid ${activeId===t.id?"rgba(255,255,255,0.45)":"rgba(255,255,255,0.1)"}`,
-                    color:activeId===t.id?"#fff":"rgba(255,255,255,0.32)",
-                    padding:"8px 16px",fontFamily:"inherit",fontSize:10,letterSpacing:2,
-                    whiteSpace:"nowrap",flexShrink:0 }}>
-                  {t.name.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            {/* Export bar */}
-            <div className="export-bar">
-              <div>
-                <p style={{ fontFamily:"'Oswald',sans-serif",fontSize:15,letterSpacing:3,color:"#fff" }}>
-                  {activeTheme.name.toUpperCase()}
-                </p>
-                <p style={{ fontSize:9,color:"rgba(255,255,255,0.26)",letterSpacing:2,marginTop:2 }}>
-                  {activeTheme.tagline}
-                </p>
+            {/* RIGHT: preview */}
+            <div>
+              <div style={{ display:"flex",gap:5,marginBottom:16,flexWrap:"wrap" }}>
+                {THEMES.map(t=>(
+                  <button key={t.id} onClick={()=>setActiveId(t.id)}
+                    style={{ background:activeId===t.id?"rgba(255,255,255,0.08)":"transparent",
+                      border:`1px solid ${activeId===t.id?"rgba(255,255,255,0.45)":"rgba(255,255,255,0.1)"}`,
+                      color:activeId===t.id?"#fff":"rgba(255,255,255,0.32)",
+                      padding:"6px 20px",fontFamily:"inherit",fontSize:9,letterSpacing:2 }}>
+                    {t.name.toUpperCase()}
+                  </button>
+                ))}
               </div>
-              <div className="export-btn-wrap">
-                <button className="xbtn"
-                  onClick={()=>doExport(activeId)}
+
+              <div style={{ display:"flex",alignItems:"center",gap:14,marginBottom:14,flexWrap:"wrap" }}>
+                <div>
+                  <p style={{ fontFamily:"'Oswald',sans-serif",fontSize:15,letterSpacing:3,color:"#fff" }}>
+                    {activeTheme.name.toUpperCase()}
+                  </p>
+                  <p style={{ fontSize:8,color:"rgba(255,255,255,0.26)",letterSpacing:2,marginTop:2 }}>
+                    {activeTheme.tagline}
+                  </p>
+                </div>
+                <button onClick={()=>doExport(activeId)}
                   disabled={exportSt[activeId]==="loading"}
-                  style={{ background:"transparent",width:"100%",
+                  style={{ marginLeft:"auto",background:"transparent",
                     border:"1px solid rgba(255,255,255,0.38)",color:"#fff",
-                    padding:"12px 24px",fontFamily:"inherit",fontSize:10,letterSpacing:3 }}>
+                    padding:"9px 24px",fontFamily:"inherit",fontSize:9,letterSpacing:3 }}>
                   {exportSt[activeId]==="done"    ? "✓ SAVED · 1080×1080" :
                    exportSt[activeId]==="loading" ? "⟳ RENDERING…"        :
                    "↓ EXPORT 1080×1080 PNG"}
                 </button>
               </div>
-            </div>
 
-            {/* Card preview — centered, scales to screen */}
-            <div className="preview-wrap" style={{ marginBottom:20 }}>
-              <div style={{ width:"100%",maxWidth:540,aspectRatio:"1/1",
-                border:"1px solid rgba(255,255,255,0.08)",overflow:"hidden",
-                position:"relative" }}>
-                {/* Render card at full 540×540, scale down via CSS if needed */}
-                <div style={{ position:"absolute",top:0,left:0,
-                  width:540,height:540,
-                  transform:"scale(var(--preview-scale,1))",
-                  transformOrigin:"top left" }}>
-                  <ActiveCard {...cardProps(activeId, el=>{ cardRefs.current[activeId]=el; })} />
-                </div>
-                <style>{`
-                  .preview-wrap { container-type: inline-size; }
-                  @container (max-width: 539px) {
-                    .preview-wrap > div > div {
-                      transform: scale(calc(100cqw / 540));
-                    }
-                  }
-                `}</style>
+              <div style={{ marginBottom:20 }}>
+                <ActiveCard {...cardProps(activeId, el=>{ cardRefs.current[activeId]=el; })} />
+              </div>
+
+              <p style={{ fontSize:7,letterSpacing:3,color:"rgba(255,255,255,0.16)",marginBottom:10 }}>OTHER THEMES</p>
+              <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8 }}>
+                {THEMES.filter(t=>t.id!==activeId).map(t=>{
+                  const TC=t.Component;
+                  return (
+                    <div key={t.id} onClick={()=>setActiveId(t.id)}
+                      style={{ border:"1px solid rgba(255,255,255,0.07)",overflow:"hidden",
+                        position:"relative",aspectRatio:"1/1",cursor:"pointer",
+                        transition:"transform .2s" }}>
+                      <div style={{ position:"absolute",top:0,left:0,
+                        transformOrigin:"top left",transform:`scale(${1/4})`,
+                        width:540,height:540,pointerEvents:"none" }}>
+                        <TC {...cardProps(t.id,null)}/>
+                      </div>
+                      <div style={{ position:"absolute",inset:0 }}/>
+                      <div style={{ position:"absolute",bottom:0,left:0,right:0,padding:"4px 6px",
+                        background:"rgba(0,0,0,0.88)",fontSize:7,letterSpacing:1,
+                        color:"rgba(255,255,255,0.4)",display:"flex",justifyContent:"space-between" }}>
+                        <span>{t.name.toUpperCase()}</span>
+                        <span style={{ color:"rgba(255,255,255,0.2)" }}>↗</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Other themes thumbnails */}
-            <p style={{ fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.16)",marginBottom:10 }}>
-              OTHER THEMES
-            </p>
-            <div className="thumbs-grid">
-              {THEMES.filter(t=>t.id!==activeId).map(t=>{
-                const TC=t.Component;
-                const THUMB_SCALE = 1/4;
-                return (
-                  <div key={t.id} className="thumb"
-                    onClick={()=>setActiveId(t.id)}
-                    style={{ border:"1px solid rgba(255,255,255,0.07)",overflow:"hidden",
-                      position:"relative",aspectRatio:"1/1",width:"100%" }}>
-                    <div style={{ position:"absolute",top:0,left:0,
-                      transformOrigin:"top left",transform:`scale(${THUMB_SCALE})`,
-                      width:540,height:540,pointerEvents:"none" }}>
-                      <TC {...cardProps(t.id,null)}/>
-                    </div>
-                    <div style={{ position:"absolute",inset:0 }}/>
-                    <div style={{ position:"absolute",bottom:0,left:0,right:0,padding:"4px 5px",
-                      background:"rgba(0,0,0,0.88)",fontSize:7,letterSpacing:1,
-                      color:"rgba(255,255,255,0.4)",display:"flex",
-                      justifyContent:"space-between",alignItems:"center" }}>
-                      <span style={{ fontSize:"clamp(6px,1.5vw,8px)" }}>{t.name.toUpperCase()}</span>
-                      <span style={{ color:"rgba(255,255,255,0.2)",fontSize:8 }}>↗</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Privacy note */}
-            <div style={{ marginTop:16,display:"flex",alignItems:"center",gap:8,
-              padding:"10px 12px",background:"rgba(0,255,157,0.03)",
-              border:"1px solid rgba(0,255,157,0.1)" }}>
-              <span style={{ color:"#00FF9D",fontSize:12 }}>⬡</span>
-              <p style={{ fontSize:9,color:"rgba(255,255,255,0.2)",letterSpacing:1 }}>
-                CLIENT-SIDE ONLY · YOUR DATA NEVER LEAVES YOUR BROWSER
-              </p>
-            </div>
-
-          </div>{/* end right panel */}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
